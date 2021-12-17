@@ -10,7 +10,7 @@ abstract class SingleFragmentActivity: AppCompatActivity() {
     protected abstract fun createFragment(): Fragment
 
     @LayoutRes
-    protected fun getLayoutResId(): Int {
+    protected open fun getLayoutResId(): Int {
         return R.layout.activity_fragment
     }
 

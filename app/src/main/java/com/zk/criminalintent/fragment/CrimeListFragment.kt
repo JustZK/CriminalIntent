@@ -19,6 +19,16 @@ class CrimeListFragment : Fragment() {
     private lateinit var mCrimeRecyclerView: RecyclerView
     private var mAdapter: CrimeAdapter? = null
     private var mSubtitleVisible = false
+    private var mCallbacks: Callbacks? = null
+
+    interface Callbacks {
+        fun onCrimeSelected(crime: Crime)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mCallbacks = context as Callbacks
+    }
 
     companion object {
         private const val REQUEST_CRIME = 0x01
@@ -61,8 +71,10 @@ class CrimeListFragment : Fragment() {
             R.id.new_crime -> {
                 val crime = Crime()
                 CrimeLab.instance.addCrime(crime)
-                val intent = CrimePagerActivity.newInstance(activity!!, crimeId = crime.id)
-                startActivity(intent)
+//                val intent = CrimePagerActivity.newInstance(activity!!, crimeId = crime.id)
+//                startActivity(intent)
+                updateUI()
+                mCallbacks?.onCrimeSelected(crime)
                 true
             }
             R.id.show_subtitle -> {
@@ -96,7 +108,7 @@ class CrimeListFragment : Fragment() {
         outState.putBoolean(SAVE_SUBTITLE_VISIBLE, mSubtitleVisible)
     }
 
-    private fun updateUI() {
+    public fun updateUI() {
         val crimeLab = CrimeLab.instance
         val crimes = crimeLab.getCrimes()
 
@@ -133,10 +145,11 @@ class CrimeListFragment : Fragment() {
 
         override fun onClick(v: View?) {
 //            Toast.makeText(activity, "${mCrime?.title} clicked!", Toast.LENGTH_SHORT).show()
-            startActivityForResult(
-                CrimePagerActivity.newInstance(activity!!, mCrime?.id!!),
-                REQUEST_CRIME
-            )
+//            startActivityForResult(
+//                CrimePagerActivity.newInstance(activity!!, mCrime?.id!!),
+//                REQUEST_CRIME
+//            )
+            mCallbacks?.onCrimeSelected(mCrime!!)
         }
     }
 
@@ -166,5 +179,10 @@ class CrimeListFragment : Fragment() {
         if (requestCode == REQUEST_CRIME) {
             // handle result
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallbacks = null
     }
 }

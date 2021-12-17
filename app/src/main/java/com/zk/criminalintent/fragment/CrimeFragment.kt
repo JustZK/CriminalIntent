@@ -1,6 +1,7 @@
 package com.zk.criminalintent.fragment
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -34,6 +35,16 @@ class CrimeFragment : Fragment() {
     private lateinit var mReportButton: Button
     private lateinit var mPhotoButton: ImageButton
     private lateinit var mPhotoView: ImageView
+    private var mCallbacks: Callbacks? = null
+
+    public interface Callbacks {
+        fun onCrimeUpdated(crime: Crime)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mCallbacks = context as Callbacks
+    }
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
@@ -231,5 +242,10 @@ class CrimeFragment : Fragment() {
             val bitmap = PictureUtils.getScaledBitmap(mPhotoFile!!.path, activity!!)
             mPhotoView.setImageBitmap(bitmap)
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallbacks = null
     }
 }
