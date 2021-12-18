@@ -15,7 +15,7 @@ import com.zk.criminalintent.fragment.CrimeFragment
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CrimePagerActivity : AppCompatActivity() {
+class CrimePagerActivity : AppCompatActivity(), CrimeFragment.Callbacks {
     private lateinit var mViewPager: ViewPager
     private lateinit var mCrimes : ArrayList<Crime>
 
@@ -56,5 +56,9 @@ class CrimePagerActivity : AppCompatActivity() {
                 break
             }
         }
+    }
+
+    override fun onCrimeUpdated(crime: Crime) {
+
     }
 }

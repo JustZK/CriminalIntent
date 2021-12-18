@@ -11,7 +11,7 @@ import com.zk.criminalintent.bean.CrimeLab
 import com.zk.criminalintent.fragment.CrimeFragment
 import com.zk.criminalintent.fragment.CrimeListFragment
 
-class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks {
+class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks, CrimeFragment.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,5 +38,10 @@ class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks 
                 .replace(R.id.detail_fragment_container, newDetail)
                 .commit()
         }
+    }
+
+    override fun onCrimeUpdated(crime: Crime) {
+        val listFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as CrimeListFragment
+        listFragment.updateUI()
     }
 }

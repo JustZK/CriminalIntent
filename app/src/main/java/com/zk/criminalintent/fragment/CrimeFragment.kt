@@ -81,8 +81,6 @@ class CrimeFragment : Fragment() {
     ): View? {
         val v = inflater.inflate(R.layout.fragment_crime, container, false)
 
-
-
         mTitleField = v.findViewById(R.id.crime_title)
         mTitleField.setText(mCrime.title)
         mTitleField.addTextChangedListener(object : TextWatcher {
@@ -92,6 +90,7 @@ class CrimeFragment : Fragment() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 mCrime.title = p0.toString()
+                updateCrime()
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -111,7 +110,10 @@ class CrimeFragment : Fragment() {
         }
         mSolvedCheckBox = v.findViewById(R.id.crime_solved)
         mSolvedCheckBox.isChecked = mCrime.solved
-        mSolvedCheckBox.setOnCheckedChangeListener { _, p1 -> mCrime.solved = p1 }
+        mSolvedCheckBox.setOnCheckedChangeListener { _, p1 ->
+            mCrime.solved = p1
+            updateCrime()
+        }
 
         mReportButton = v.findViewById(R.id.crime_report)
         mReportButton.setOnClickListener {
@@ -191,6 +193,7 @@ class CrimeFragment : Fragment() {
         if (requestCode == REQUEST_DATE) {
             val date = data!!.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
             mCrime.date = date
+            updateCrime()
             updateDate()
         } else if (requestCode == REQUEST_CONTACT && data != null) {
             val contactUri = data.data!!
@@ -203,12 +206,22 @@ class CrimeFragment : Fragment() {
                 mCrime.suspect = suspect
                 mSuspectButton.text = suspect
             }
-        } else if (requestCode == REQUEST_PHOTO){
-            val uri = FileProvider.getUriForFile(activity!!, "com.zk.criminalintent.fileprovider", mPhotoFile!!)
+        } else if (requestCode == REQUEST_PHOTO) {
+            val uri = FileProvider.getUriForFile(
+                activity!!,
+                "com.zk.criminalintent.fileprovider",
+                mPhotoFile!!
+            )
             activity!!.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
+            updateCrime()
             updatePhotoView()
         }
+    }
+
+    private fun updateCrime() {
+        CrimeLab.instance.updateCrime(mCrime)
+        mCallbacks?.onCrimeUpdated(mCrime)
     }
 
     private fun updateDate() {
@@ -235,8 +248,8 @@ class CrimeFragment : Fragment() {
         return getString(R.string.crime_report, mCrime.title, dateString, solvedString, suspect)
     }
 
-    private fun updatePhotoView(){
-        if (mPhotoFile == null || !mPhotoFile!!.exists()){
+    private fun updatePhotoView() {
+        if (mPhotoFile == null || !mPhotoFile!!.exists()) {
             mPhotoView.setImageDrawable(null)
         } else {
             val bitmap = PictureUtils.getScaledBitmap(mPhotoFile!!.path, activity!!)
