@@ -225,7 +225,7 @@ class CrimeFragment : Fragment() {
     }
 
     private fun updateDate() {
-        mDateButton.text = mCrime.date.toString()
+        mDateButton.text =   mCrime.date.toLocaleString()
     }
 
     private fun getCrimeReport(): String {
@@ -251,9 +251,11 @@ class CrimeFragment : Fragment() {
     private fun updatePhotoView() {
         if (mPhotoFile == null || !mPhotoFile!!.exists()) {
             mPhotoView.setImageDrawable(null)
+            mPhotoView.contentDescription = getString(R.string.crime_photo_no_image_description)
         } else {
             val bitmap = PictureUtils.getScaledBitmap(mPhotoFile!!.path, activity!!)
             mPhotoView.setImageBitmap(bitmap)
+            mPhotoView.contentDescription = getString(R.string.crime_photo_image_description)
         }
     }
 
